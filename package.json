@@ -1,0 +1,121 @@
+{
+  "name": "asmollydbg",
+  "publisher": "GateaDavid",
+  "displayName": "Assembly OllyDbg" ,
+  "description": "",
+  "version": "0.0.2",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Education",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "Assembly",
+    "OllyDbg",
+    "Debug"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "asm.run",
+        "title": "Run Code",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "asm.stop",
+        "title": "Stop debugging",
+        "icon": "$(debug-stop)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "when": "config.asm.showRunIconInEditorTitleMenu",
+          "command": "asm.run",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "when": "config.asm.showStopIconInEditorTitleMenu",
+          "command": "asm.stop",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Run Code configuration",
+      "properties": {
+        "asm.saveFileBeforeRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to save the current file before running.",
+          "scope": "resource"
+        },
+        "asm.executablePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the executable to run.",
+          "scope": "resource"
+        },
+        "asm.showRunIconInEditorTitleMenu": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to show 'Run Code' icon in editor title menu.",
+          "scope": "resource"
+        },
+        "asm.showStopIconInEditorTitleMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Stop code run' icon in the editor title menu when code is running.",
+          "scope": "resource"
+        },
+        "asm.showTerminalInDebugMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show the Terminal in debug mode.",
+          "scope": "resource"
+        },
+        "asm.showRunCommandInEditorContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Run Code' command in editor context menu.",
+          "scope": "resource"
+        },
+        "asm.showRunCommandInExplorerContextMenu": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to show 'Run Code' command in explorer context menu.",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@vscode/test-electron": "^2.3.4",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
+  }
+}
