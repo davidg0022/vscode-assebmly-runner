@@ -139,7 +139,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 
-	const run = vscode.commands.registerCommand('asm.run', async () => {
+	const debug = vscode.commands.registerCommand('asm.debug', async () => {
 		await stopDebugging();
 		var executablePath = await getExecutablePath();
 		console.log(executablePath);
@@ -192,11 +192,53 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
+	const run = vscode.commands.registerCommand('asm.run', async () => {
+		await stopDebugging();
+		var executablePath = await getExecutablePath();
+		if (executablePath === undefined || executablePath === '') {
+			vscode.window.showInformationMessage('No executable path set!');
+			return;
+		}
+		if (activeTextEditor === undefined) {
+			vscode.window.showInformationMessage('No active editor!');
+			return;
+		}
+		const currentFile = activeTextEditor.document.fileName;
+
+
+		const lstFile = currentFile.slice(0, -3) + 'lst';
+		const objFile = currentFile.slice(0, -3) + 'obj';
+		const exeFile = currentFile.slice(0, -3) + 'exe';
+
+		const nasmCommand = `"${executablePath}"\\nasm\\nasm.exe -fobj "${currentFile}" -l "${lstFile}" -I"${executablePath}"\\nasm\\\\`;
+		const alinkCommand = `"${executablePath}\\nasm\\ALINK.EXE" -oPE -subsys console -entry start "${objFile}"`;
+		const runCommand = `"${exeFile}"`;
+
+		var fileExecutableName:string|undefined = currentFile.slice(0, -3) + 'exe';
+		fileExecutableName = fileExecutableName.split('\\').pop();
+
+		diagnosticCollection.clear();
+		await startExecutable(nasmCommand);
+		await startExecutable(alinkCommand);
+		
+		const terminal = vscode.window.createTerminal({
+			name: 'Assembly',
+			hideFromUser: false
+		});
+		terminal.show();
+		terminal.sendText(runCommand);
+
+
+		currentDebugFileExecutable = fileExecutableName!;
+
+		
+	});
+
 	const stop = vscode.commands.registerCommand('asm.stop', async () => {
 		await stopDebugging();
 	});
 
-	context.subscriptions.push(run);
+	context.subscriptions.push(debug);
 	context.subscriptions.push(stop);
 	context.subscriptions.push(onChangeTextEditor);
 }

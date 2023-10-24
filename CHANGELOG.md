@@ -1,9 +1,11 @@
 # Change Log
 
-All notable changes to the "asm" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### 0.0.3
+* Added logo and description to the extension.
 
-## [Unreleased]
+### 0.0.2
+* Fiexed the issue with the extension not working on some systems.
 
-- Initial release
+### 0.0.1
+* Initial Release

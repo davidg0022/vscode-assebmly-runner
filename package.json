@@ -1,11 +1,16 @@
 {
   "name": "asmollydbg",
   "publisher": "GateaDavid",
-  "displayName": "Assembly OllyDbg" ,
-  "description": "",
-  "version": "0.0.2",
+  "displayName": "Assembly Runner" ,
+  "description": "Run Assembly code in OllyDbg",
+  "version": "0.0.3",
+  "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidg0022/vscode-assebmly-runner.git"
   },
   "categories": [
     "Debuggers",
@@ -23,9 +28,14 @@
   "contributes": {
     "commands": [
       {
+        "command": "asm.debug",
+        "title": "Debug Code",
+        "icon": "$(debug-start)"
+      },
+      {
         "command": "asm.run",
         "title": "Run Code",
-        "icon": "$(debug-start)"
+        "icon": "$(play)"
       },
       {
         "command": "asm.stop",
@@ -35,6 +45,11 @@
     ],
     "menus": {
       "editor/title/run": [
+        {
+          "when": "config.asm.showRunIconInEditorTitleMenu",
+          "command": "asm.debug",
+          "group": "navigation"
+        },
         {
           "when": "config.asm.showRunIconInEditorTitleMenu",
           "command": "asm.run",
