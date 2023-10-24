@@ -3,7 +3,7 @@
   "publisher": "GateaDavid",
   "displayName": "Assembly Runner" ,
   "description": "Run Assembly code in OllyDbg",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
@@ -23,7 +23,9 @@
     "OllyDbg",
     "Debug"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [

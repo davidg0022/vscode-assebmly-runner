@@ -17,6 +17,9 @@ const updateConfig = (editor: any) => {
 
 export function activate(context: vscode.ExtensionContext) {
 
+
+	updateConfig(activeTextEditor);
+
 	const onChangeTextEditor = vscode.window.onDidChangeActiveTextEditor(editor => {
 		activeTextEditor = editor;
 		updateConfig(editor);
@@ -27,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (executablePath === undefined || executablePath === '') {
 			executablePath = await vscode.window.showInputBox(
 				{
-					placeHolder: 'Enter executable path',
+					placeHolder: 'Enter the path to the folder containing nasm and ollydbg (asm_tools)',
 					value: ""
 				}
 			);
