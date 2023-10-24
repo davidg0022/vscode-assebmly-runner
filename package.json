@@ -3,7 +3,7 @@
   "publisher": "GateaDavid",
   "displayName": "Assembly Runner" ,
   "description": "Run Assembly code in OllyDbg",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
@@ -43,6 +43,16 @@
         "command": "asm.stop",
         "title": "Stop debugging",
         "icon": "$(debug-stop)"
+      }
+    ],
+    "keybindings":[
+      {
+        "command": "asm.debug",
+        "key": "ctrl+alt+n"
+      },
+      {
+        "command": "asm.stop",
+        "key": "ctrl+alt+m"
       }
     ],
     "menus": {
