@@ -112,6 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 				  console.log("Line Number:", lineNumber);
+				  vscode.window.showErrorMessage(`Error: ${splitError[1]}`);
 				} 
 				else {
 				  console.log("Line number not found in the error message.");
