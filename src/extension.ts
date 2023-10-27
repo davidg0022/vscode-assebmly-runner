@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import {exec} from 'child_process';
-
+import {join} from 'path';
+import * as fs from 'fs';
 const diagnosticCollection = vscode.languages.createDiagnosticCollection('asm');
 
 let activeTextEditor = vscode.window.activeTextEditor;
@@ -14,17 +15,44 @@ const updateConfig = (editor: any) => {
     vscode.workspace.getConfiguration().update('asm.showRunIconInEditorTitleMenu', isAsmFile, vscode.ConfigurationTarget.Global);
 };
 
+const parentDir = join(__dirname, '../../../../../../');
+console.log(parentDir, "Parent dir");
 
 export function activate(context: vscode.ExtensionContext) {
 
+	var isBuiltInExtension:boolean = false;
 
+	function checkIfBuiltInExtension():boolean {
+		const parentDir = join(__dirname, '../../../../../../');
+		const pathExists = fs.existsSync(parentDir);
+		if(!pathExists)
+		{
+			return false;
+		}
+		const ollydbgPath = join(parentDir, 'ollydbg');
+		const nasmPath = join(parentDir, 'nasm');
+		const ollydbgPathExists = fs.existsSync(ollydbgPath);
+		const nasmPathExists = fs.existsSync(nasmPath);
+		if(!ollydbgPathExists || !nasmPathExists)
+		{
+			return false;
+		}
+		return true;
+	}
+	var isBuiltInExtension = checkIfBuiltInExtension();
 	updateConfig(activeTextEditor);
 
 	const onChangeTextEditor = vscode.window.onDidChangeActiveTextEditor(editor => {
 		activeTextEditor = editor;
 		updateConfig(editor);
 	});
+
+
 	const getExecutablePath = async () => {
+		if (isBuiltInExtension) {
+			return join(__dirname, '../../../../../../');
+		}
+
 		var executablePath = vscode.workspace.getConfiguration().get('asm.executablePath');
 
 		if (executablePath === undefined || executablePath === '') {
@@ -38,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(`Saved executable path: ${executablePath}`);
 			
 		} 
-		return executablePath;
+		return parentDir;
 	};
 	
 	const setRunningState = (isRunning: boolean) => {

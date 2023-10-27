@@ -1,9 +1,9 @@
 {
   "name": "asmollydbg",
   "publisher": "GateaDavid",
-  "displayName": "Assembly Runner" ,
+  "displayName": "Assembly Runner",
   "description": "Run Assembly code in OllyDbg",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
@@ -45,7 +45,7 @@
         "icon": "$(debug-stop)"
       }
     ],
-    "keybindings":[
+    "keybindings": [
       {
         "command": "asm.debug",
         "key": "ctrl+alt+n"
