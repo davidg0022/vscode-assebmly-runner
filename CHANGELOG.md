@@ -1,6 +1,9 @@
 # Change Log
 
 
+### 0.1.0
+* Save file before compiling.
+
 ### 0.0.9
 * Assembly template added.
 

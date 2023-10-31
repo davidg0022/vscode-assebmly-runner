@@ -3,7 +3,7 @@
   "publisher": "GateaDavid",
   "displayName": "Assembly Runner",
   "description": "Run Assembly code in OllyDbg",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
@@ -113,12 +113,6 @@
       "type": "object",
       "title": "Run Code configuration",
       "properties": {
-        "asm.saveFileBeforeRun": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether to save the current file before running.",
-          "scope": "resource"
-        },
         "asm.deleteExeFileAfterRun": {
           "type": "boolean",
           "default": true,

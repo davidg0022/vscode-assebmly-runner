@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import {exec} from 'child_process';
-import {join} from 'path';
+import { exec } from 'child_process';
+import { join } from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 
@@ -198,6 +198,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	const debug = vscode.commands.registerCommand('asm.debug', async () => {
+		// save the current file
+		activeTextEditor?.document.save();
+
+
 		await stopDebugging();
 		var executablePath = await getExecutablePath();
 		if (executablePath === undefined || executablePath === '') {
@@ -263,6 +267,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const run = vscode.commands.registerCommand('asm.run', async () => {
+		activeTextEditor?.document.save();
 		await stopDebugging();
 		var executablePath = await getExecutablePath();
 		if (executablePath === undefined || executablePath === '') {
