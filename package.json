@@ -3,7 +3,7 @@
   "publisher": "GateaDavid",
   "displayName": "Assembly Runner",
   "description": "Run Assembly code in OllyDbg",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.83.0"
@@ -31,24 +31,40 @@
     "commands": [
       {
         "command": "asm.debug",
-        "title": "Debug Code",
+        "title": "⚙️ Debug Code",
         "icon": "$(debug-start)"
       },
       {
         "command": "asm.run",
-        "title": "Run Code",
+        "title": "🔧 Run Code",
         "icon": "$(play)"
       },
       {
         "command": "asm.stop",
         "title": "Stop debugging",
         "icon": "$(debug-stop)"
+      },
+      {
+        "command": "asm.template",
+        "title": "📄 Assembly Template",
+        "icon": "$(file-code)"
       }
     ],
     "keybindings": [
       {
+        "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
         "command": "asm.debug",
-        "key": "ctrl+alt+n"
+        "key": "f5"
+      },
+      {
+        "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
+        "command": "asm.run",
+        "key": "f6"
+      },
+      {
+        "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
+        "command": "asm.template",
+        "key": "f7"
       },
       {
         "command": "asm.stop",
@@ -74,6 +90,23 @@
           "command": "asm.stop",
           "group": "navigation"
         }
+      ],
+      "editor/context": [
+        {
+          "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
+          "command": "asm.template",
+          "group": "navigation"
+        },
+        {
+          "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
+          "command": "asm.debug",
+          "group": "navigation@1"
+        },
+        {
+          "when": "editorTextFocus && config.asm.showRunCommandInEditorContextMenu",
+          "command": "asm.run",
+          "group": "navigation@1"
+        }
       ]
     },
     "configuration": {
@@ -84,6 +117,24 @@
           "type": "boolean",
           "default": false,
           "description": "Whether to save the current file before running.",
+          "scope": "resource"
+        },
+        "asm.deleteExeFileAfterRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to delete the .exe file after running.",
+          "scope": "resource"
+        },
+        "asm.deleteObjFileAfterRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to delete the .obj file after running.",
+          "scope": "resource"
+        },
+        "asm.deleteLstFileAfterRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to delete the .lst file after running.",
           "scope": "resource"
         },
         "asm.executablePath": {

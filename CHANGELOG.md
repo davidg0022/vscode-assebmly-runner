@@ -1,5 +1,15 @@
 # Change Log
 
+
+### 0.0.9
+* Assembly template added.
+
+### 0.0.8
+* Fixed error message not showing.
+
+### 0.0.7
+* Fixed path issue with nasm.
+
 ### 0.0.6
 * Fixed error message not showing.
 

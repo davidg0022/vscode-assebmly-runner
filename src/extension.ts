@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import {exec} from 'child_process';
 import {join} from 'path';
 import * as fs from 'fs';
+import * as os from 'os';
+
 const diagnosticCollection = vscode.languages.createDiagnosticCollection('asm');
 
 let activeTextEditor = vscode.window.activeTextEditor;
@@ -15,10 +17,12 @@ const updateConfig = (editor: any) => {
     vscode.workspace.getConfiguration().update('asm.showRunIconInEditorTitleMenu', isAsmFile, vscode.ConfigurationTarget.Global);
 };
 
-const parentDir = join(__dirname, '../../../../../../');
-console.log(parentDir, "Parent dir");
 
 export function activate(context: vscode.ExtensionContext) {
+	if (os.platform() !== 'win32') {
+        vscode.window.showWarningMessage('Assembly Runner extension is only available on Windows.');
+        return;
+    }
 
 	var isBuiltInExtension:boolean = false;
 
@@ -62,11 +66,32 @@ export function activate(context: vscode.ExtensionContext) {
 					value: ""
 				}
 			);
-			vscode.workspace.getConfiguration().update('asm.executablePath', executablePath, vscode.ConfigurationTarget.Global);
-			vscode.window.showInformationMessage(`Saved executable path: ${executablePath}`);
+			
+			if (executablePath === undefined || executablePath === '') {
+				vscode.window.showInformationMessage('Please enter a valid path!');
+				return '';
+			}
+
+			// check if the path contains nasm and ollydbg folders
+			const ollydbgPath = join(`${executablePath}`, 'ollydbg');
+			const nasmPath = join(`${executablePath}`, 'nasm');
+			
+			const ollydbgPathExists = fs.existsSync(ollydbgPath);
+			const nasmPathExists = fs.existsSync(nasmPath);
+
+			if (!ollydbgPathExists || !nasmPathExists) {
+				vscode.window.showErrorMessage('Invalid assembly tools path! Path must contain nasm and ollydbg folders and the executable files inside them.');
+				return '';
+			}
+			
+			if (executablePath !== undefined && executablePath !== '') {
+				vscode.workspace.getConfiguration().update('asm.executablePath', executablePath, vscode.ConfigurationTarget.Global);
+				vscode.window.showInformationMessage(`Saved assembly tools path: ${executablePath}`);
+				return executablePath;
+			}
 			
 		} 
-		return parentDir;
+		return executablePath;
 	};
 	
 	const setRunningState = (isRunning: boolean) => {
@@ -146,6 +171,7 @@ export function activate(context: vscode.ExtensionContext) {
 				  console.log("Line number not found in the error message.");
 				}
 
+				vscode.window.showErrorMessage(`Error: ${error.message}`);
 				reject(`Errors: ${splitError[1]}`);
 			  }
 			  else {
@@ -174,9 +200,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const debug = vscode.commands.registerCommand('asm.debug', async () => {
 		await stopDebugging();
 		var executablePath = await getExecutablePath();
-		console.log(executablePath);
 		if (executablePath === undefined || executablePath === '') {
-			vscode.window.showInformationMessage('No executable path set!');
+			vscode.window.showInformationMessage('Assembly tools path not set!');
 			return;
 		}
 		if (activeTextEditor === undefined) {
@@ -218,9 +243,22 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-		deleteFile(lstFile);
-		deleteFile(objFile);
-		deleteFile(exeFile);
+		const deleteExe = vscode.workspace.getConfiguration().get('asm.deleteExeFileAfterRun');
+		const deleteLst = vscode.workspace.getConfiguration().get('asm.deleteLstFileAfterRun');
+		const deleteObj = vscode.workspace.getConfiguration().get('asm.deleteObjFileAfterRun');
+
+		if (deleteLst)
+		{
+			deleteFile(lstFile);
+		}
+		if (deleteObj)
+		{
+			deleteFile(objFile);
+		}
+		if (deleteExe)
+		{
+			deleteFile(exeFile);
+		}
 
 	});
 
@@ -270,8 +308,58 @@ export function activate(context: vscode.ExtensionContext) {
 		await stopDebugging();
 	});
 
+	const template = vscode.commands.registerCommand('asm.template', async () => {
+		const template = 
+`bits 32 ;assembling for the 32 bits architecture
+global start
+
+; we ask the assembler to give global visibility to the symbol called start 
+;(the start label will be the entry point in the program) 
+extern exit ; we inform the assembler that the exit symbol is foreign; it exists even if we won't be defining it
+import exit msvcrt.dll  ; we specify the external library that defines the symbol
+		; msvcrt.dll contains exit, printf and all the other important C-runtime functions
+
+; our variables are declared here (the segment is called data) 
+segment data use32 class=data
+; ... 
+
+; the program code will be part of a segment called code
+segment code use32 class=code
+start:
+; ... 
+
+	; call exit(0) ), 0 represents status code: SUCCESS
+	push dword 0 ; saves on stack the parameter of the function exit
+	call [exit] ; function exit is called in order to end the execution of the program`;
+		// Get the current text editor
+		const editor = vscode.window.activeTextEditor;
+		// check if the editor has a file open with text in it
+		const editorText = editor?.document.getText();
+
+		if (editorText !== undefined && editorText !== '') {
+			const confirmation = await vscode.window.showInformationMessage(
+				'Are you sure you want to replace the current file with the assembly template?',
+				'Yes', 'No'
+			);
+			if (confirmation === 'Yes') {
+				editor?.edit(editBuilder => {
+					editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1000, 1000)), template);
+				});
+			}
+		}
+		else
+		{
+			editor?.edit(editBuilder => {
+				editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1000, 1000)), template);
+			});
+		}
+
+	});
+
 	context.subscriptions.push(debug);
 	context.subscriptions.push(stop);
+	context.subscriptions.push(run);
+	context.subscriptions.push(template);
 	context.subscriptions.push(onChangeTextEditor);
 }
 
